@@ -13,7 +13,7 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "homepage":"https://alan-y62.github.io/",
+  "homepage":"https://Alan-Y62.github.io/newDex",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
