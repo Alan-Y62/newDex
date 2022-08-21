@@ -2,69 +2,11 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import './App.css';
 
-{
-  /* <div className="modal__poke_evolutions">
-  {evol.chain ? (
-    <>
-      <div>
-        <img
-          src={`${
-            pokemons[
-              Number(evol.chain.species.url.slice(42).replace('/', '')) - 1
-            ].sprites.front_default
-          }`}
-          alt="sprite"
-        ></img>
-      </div>
-      <>&rarr;</>
-      {evol.chain.evolves_to ? (
-        <div>
-          <img
-            src={`${
-              pokemons[
-                Number(
-                  evol.chain.evolves_to[0].species.url
-                    .slice(42)
-                    .replace('/', '')
-                ) - 1
-              ].sprites.front_default
-            }`}
-            alt="sprite"
-          ></img>
-        </div>
-      ) : (
-        <></>
-      )}
-      <>&rarr;</>
-      {evol.chain.evolves_to[0].evolves_to ? (
-        <div>
-          <img
-            src={`${
-              pokemons[
-                Number(
-                  evol.chain.evolves_to[0].evolves_to[0].species.url
-                    .slice(42)
-                    .replace('/', '')
-                ) - 1
-              ].sprites.front_default
-            }`}
-            alt="sprite"
-          ></img>
-        </div>
-      ) : (
-        <></>
-      )}
-    </>
-  ) : (
-    <></>
-  )}
-</div>; */
-}
-
 function App() {
   const [pokemons, setPokemons] = useState([]);
   const [pokemon, setPokemon] = useState({});
   const [evol, setEvols] = useState({});
+  const [abilityFlavor, setAbility] = useState([]);
   const [exists, setExists] = useState(false);
   const [query, setQuery] = useState('');
   const [isLoading, setLoading] = useState(true);
@@ -109,6 +51,7 @@ function App() {
   const changeRegions = async (e) => {
     setLoading(true);
     setRegion(e.target.value);
+    fetchPokedex();
   };
 
   const handleInput = (e) => {
@@ -147,6 +90,17 @@ function App() {
           return evol_line.indexOf(e) === i;
         });
       });
+
+    let ABIL_ARR = [];
+    for (let i = 0; i < pokemons[e - 1].abilities.length; i++) {
+      await axios
+        .get(pokemons[e - 1].abilities[i].ability.url)
+        .then((response) =>
+          ABIL_ARR.push(response.data.flavor_text_entries[0].flavor_text)
+        );
+    }
+    setAbility(ABIL_ARR);
+
     for (let i = 0; i < evol_line.length; i++) {
       await axios
         .get('https://pokeapi.co/api/v2/pokemon/' + evol_line[i])
@@ -182,14 +136,14 @@ function App() {
     }
     return pokemons
       .filter((entryFilter) => entryFilter.name.includes(query.toLowerCase()))
-      .map((entry) => {
+      .map((entry, i) => {
         return (
           <button
             value={entry.id}
             className="entry"
             id={entry.id}
-            key={entry.id}
-            onClick={() => iChooseYou(`${entry.id}`)}
+            key={i + 1}
+            onClick={() => iChooseYou(`${i + 1}`)}
           >
             <img
               loading="lazy"
@@ -200,7 +154,7 @@ function App() {
             <div className="type__1">
               <img
                 loading="lazy"
-                src={`../types/${entry.types[0].type.name}.png`}
+                src={`../newDex/types/${entry.types[0].type.name}.png`}
                 alt=""
               ></img>
               {entry.types[0].type.name}
@@ -209,7 +163,7 @@ function App() {
               <div className="type__2">
                 <img
                   loading="lazy"
-                  src={`../types/${entry.types[1].type.name}.png`}
+                  src={`../newDex/types/${entry.types[1].type.name}.png`}
                   alt=""
                 ></img>
                 {entry.types[1].type.name}
@@ -224,10 +178,13 @@ function App() {
 
   const getAbilities = () => {
     if (pokemon.abilities) {
-      return pokemon.abilities.map((ability) => {
+      return pokemon.abilities.map((ability, i) => {
         return (
           <div key={ability.ability.name} className="ability">
-            {ability.ability.name}
+            <div className="ability_name">{ability.ability.name}</div>
+            <div className="ability_flavor_text">
+              {exists ? abilityFlavor[i] : <></>}
+            </div>
           </div>
         );
       });
@@ -257,19 +214,29 @@ function App() {
     fetchPokedex();
   }, [region]);
 
-  const changeHead = (item) => {
+  const changeHead = async (item) => {
     console.log(item);
     setPokemon(item.item);
+    let ABIL_ARR = [];
+    for (let i = 0; i < item.item.abilities.length; i++) {
+      await axios
+        .get(item.item.abilities[i].ability.url)
+        .then((response) =>
+          ABIL_ARR.push(response.data.flavor_text_entries[0].flavor_text)
+        );
+    }
+    setAbility(ABIL_ARR);
   };
 
   const pokeStats = () => {
-    const MAX_VALUES = [255, 190, 230, 194, 230, 180];
+    const MAX_VALUES = [255, 181, 230, 180, 230, 200];
+    const STAT_NAMES = ['HP', 'ATK', 'DEF', 'SP. ATK', 'SP. DEF', 'SPD'];
     if (exists) {
       return pokemon.stats.map((stat, i) => {
         return (
           <>
             <span className="stat">
-              <div>{stat.stat.name}</div>
+              <div>{STAT_NAMES[i]}</div>
               <div className="stat__bar">
                 <span
                   className="stat__value"
@@ -278,7 +245,7 @@ function App() {
                   }}
                 ></span>
               </div>
-              {stat.base_stat}
+              {stat.base_stat} / {MAX_VALUES[i]}
             </span>
           </>
         );
@@ -328,7 +295,7 @@ function App() {
       <div className="region__select">
         <select
           style={{
-            backgroundImage: `url('./regions/${region.toLowerCase()}.png')`,
+            backgroundImage: `url('./newDex/regions/${region.toLowerCase()}.png')`,
           }}
           onChange={changeRegions}
           className="dropdown__content"
@@ -351,7 +318,7 @@ function App() {
                 {pokemon.types ? (
                   <>
                     <img
-                      src={`../types/${pokemon.types[0].type.name}.png`}
+                      src={`../newDex/types/${pokemon.types[0].type.name}.png`}
                       alt=""
                     ></img>
                     {pokemon.types[0].type.name}
@@ -364,7 +331,7 @@ function App() {
                 <div className="type__2">
                   <img
                     loading="lazy"
-                    src={`../types/${pokemon.types[1].type.name}.png`}
+                    src={`../newDex/types/${pokemon.types[1].type.name}.png`}
                     alt=""
                   ></img>
                   {pokemon.types[1].type.name}
@@ -383,7 +350,10 @@ function App() {
           <div className="modal__poke_info">
             <div className="modal__poke_sprite">
               {pokemon.sprites ? (
-                <img src={`${pokemon.sprites.front_default}`}></img>
+                <img
+                  src={`${pokemon.sprites.front_default}`}
+                  alt="srpite failed"
+                ></img>
               ) : (
                 <></>
               )}

@@ -184,7 +184,7 @@ dialog .modal__poke_stats {
 .stat {
   display: flex;
   column-gap: 0.5ch;
-  margin: 1rem auto;
+  margin: 1rem 0.5rem;
   font-size: 0.8rem;
   flex-wrap: wrap;
 }
@@ -204,6 +204,21 @@ dialog .modal__poke_stats {
   height: 100%;
   background-color: red;
   transition: 1s;
+}
+
+.modal__poke_abilities {
+  width: 100%;
+  text-align: center;
+  background-color: gray;
+}
+
+.ability_name {
+  background-color: lightblue;
+  padding: 1rem 0;
+}
+
+.ability_flavor_text {
+  padding: 1.5rem 0;
 }
 
 .modal__poke_evol {
