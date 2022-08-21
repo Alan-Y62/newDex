@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/newDex/static/css/main.c6ec6acc.css",
+    "main.js": "/newDex/static/js/main.b1625acd.js",
+    "static/js/787.ab378faf.chunk.js": "/newDex/static/js/787.ab378faf.chunk.js",
+    "static/media/poke_ball.png": "/newDex/static/media/poke_ball.ca00d7582a500eba90b8.png",
+    "index.html": "/newDex/index.html",
+    "main.c6ec6acc.css.map": "/newDex/static/css/main.c6ec6acc.css.map",
+    "main.b1625acd.js.map": "/newDex/static/js/main.b1625acd.js.map",
+    "787.ab378faf.chunk.js.map": "/newDex/static/js/787.ab378faf.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c6ec6acc.css",
+    "static/js/main.b1625acd.js"
+  ]
+}
